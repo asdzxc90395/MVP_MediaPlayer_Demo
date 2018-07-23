@@ -9,15 +9,22 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.support.annotation.MainThread;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.example.cjcucsie.musicplayer.Model.MainModel;
+import com.example.cjcucsie.musicplayer.Presenter.MainPresenter;
+import com.example.cjcucsie.musicplayer.View.MainView;
+
 import java.io.IOException;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MainView{
+
+    private MainPresenter mainPresenter;
 
     Button playBtn;
     SeekBar positionBar;
@@ -27,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     MediaPlayer mp;
     int totalTime;
     SerVice ss ;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -129,32 +137,17 @@ public class MainActivity extends AppCompatActivity {
             positionBar.setProgress(currentPosition);
 
             //Update Labels
-            String elapsedTime = createTimeLabel(currentPosition);
+            String elapsedTime = mainPresenter.returncreateTimeLabel(currentPosition);
             elapsedTimeLadel.setText(elapsedTime);
 
-            String remainingTime = createTimeLabel(totalTime-currentPosition);
-            remainingTimeLadel.setText("- "+remainingTime);
+            String remainingTime = mainPresenter.returncreateTimeLabel(totalTime - currentPosition);
+            remainingTimeLadel.setText("- " + remainingTime);
         }
     };
-    public String createTimeLabel(int time){
-        String timeLabel = "";
-        int min = time / 1000 / 60;
-        int sec = time / 1000 % 60;
-        timeLabel = min+":";
-        if(sec<=10)timeLabel += "0";
-        timeLabel += sec;
 
-        return timeLabel;
-    }
    public void playBtnClick(View view) {
-        if(!mp.isPlaying()) {
-            //Stopping
-            mp.start();;
-            playBtn.setBackgroundResource(R.drawable.stop);
-        }else{
-            //Playing
-            mp.pause();
-            playBtn.setBackgroundResource(R.drawable.play);
-        }
-    }
+       mainPresenter.checkBtnClick(view);
+   }
+
+
 }
